@@ -27,6 +27,7 @@ Flag Turned onto 1 as Actual "price" > Upper Limit Specified:<br>
 
 ### (3) Visualization: <br>
 Real-Time Amazon Stock Price Line Chart w/ 50-day moving average and Summary Table with Green Records (Notification of price surpassing upper limit)<br>
-![image](https://github.com/Bernardbyy/AmazonStockPriceVisualization/assets/75737130/650e5d05-8ad3-4531-a154-96f71536e7a0)
+![image](https://github.com/Bernardbyy/AmazonStockPriceVisualization/assets/75737130/413ad699-f28d-436b-a59a-f1457a791e52)
+
 
 
