@@ -13,17 +13,19 @@ A Real Time Data Streaming Project using:<br>
 Full Demo On: [Real-Time Amazon Stock Price Visualization w/ Notified Upper and Lower Limits](https://drive.google.com/file/d/16zkV1kaSEBXrfBr7UMDQE0HGE0yTcN_M/view?usp=sharing)
 
 ## Kafka (Producer) and Spark Structured Streaming (Consumer)
-(1) Producer: <br>
+### (1) Producer: <br>
 ![image](https://github.com/Bernardbyy/AmazonStockPriceVisualization/assets/75737130/c806e586-5529-4edf-b47a-15cebad2a5b9)
 
-(2) Consumer: <br>
+
+### (2) Consumer: <br>
 Submit Spark Job with Specified Arguments of 170 (Upper Limit) and 160 (Lower Limit):<br>
 ![image](https://github.com/Bernardbyy/AmazonStockPriceVisualization/assets/75737130/e663e162-062a-46ad-95f6-5400f3aecf66)
 
 Flag Turned onto 1 as Actual "price" > Upper Limit Specified:<br>
 ![image](https://github.com/Bernardbyy/AmazonStockPriceVisualization/assets/75737130/9cca453e-82c3-48c8-b68c-2143ab20e3af)
 
-(3) Visualization: <br>
+
+### (3) Visualization: <br>
 Real-Time Amazon Stock Price Line Chart w/ 50-day moving average and Summary Table with Green Records (Notification of price surpassing upper limit)<br>
 ![image](https://github.com/Bernardbyy/AmazonStockPriceVisualization/assets/75737130/650e5d05-8ad3-4531-a154-96f71536e7a0)
 
