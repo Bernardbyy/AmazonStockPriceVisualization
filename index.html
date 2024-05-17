@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Price Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body {
+            background: #ecf9ec; /* Fading from a light grey to white */
+            color: #333;
+            font-family: Arial, sans-serif;
+        }
+        h1, h2 {
+            padding-left: 20px;
+            color: #555;
+        }
+        table, th, td {
+            border: 1px solid #ddd;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 5px;
+            text-align: left;
+        }
+        .highlight-red {
+            background-color: #ff9999; /* Light red */
+            color: rgb(60, 60, 60);
+        }
+        .highlight-green {
+            background-color: #99ff99; /* Light green */
+            color: rgb(60, 60, 60);
+        }
+        canvas {
+            background-color: #ffffff; /* White background for the chart */
+            border: 1px solid #ddd; /* Slight border for definition */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow for depth */
+        }
+    </style>
+</head>
+<body>
+    <h1>&ensp;Real-Time Amazon Stock Price Visualization 🚀📈</h1>
+    <div style="display: flex; justify-content: space-between;">
+        <div style="flex: 1; padding: 20px;">
+            <canvas id="priceChart" width="600" height="300"></canvas>
+        </div>
+        <div style="flex: 1; padding: 20px;">
+            <h2>Summary</h2>
+            <p><strong id="lastRefreshTime">As of </strong></p>
+            <p><strong>Current Price:</strong> <span id="currentPrice"></span></p>
+            <h2>Latest Prices</h2>
+            <table id="priceTable">
+                <tr>
+                    <th>Timestamp</th>
+                    <th>Price</th>
+                </tr>
+                <!-- Rows will be added here dynamically -->
+            </table>
+        </div>
+    </div>
+    <script>
+        var ctx = document.getElementById('priceChart').getContext('2d');
+        var priceChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: [],
+                datasets: [{
+                    label: 'Stock Price',
+                    data: [],
+                    borderColor: '#4a90e2', /* Subtle blue */
+                    backgroundColor: 'rgba(74, 144, 226, 0.1)', /* Light blue fill */
+                    tension: 0.1
+                }, {
+                    label: 'Moving Average',
+                    data: [],
+                    borderColor: '#ff6f61', /* Soft red */
+                    borderDash: [5, 5]
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: false
+                    }
+                },
+                animation: {
+                    duration: 0 // Disable all animations
+                },
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#333' // ensures the text is easily readable in light mode
+                        }
+                    }
+                }
+            }
+        });
+
+        function fetchData() {
+            $.ajax({
+                url: '/data',
+                type: 'GET',
+                success: function(res) {
+                    priceChart.data.labels = res.timestamp;
+                    priceChart.data.datasets[0].data = res.price_data;
+                    priceChart.data.datasets[1].data = calculateMovingAverage(res.price_data, 5);
+                    priceChart.update('none');
+                    document.getElementById('currentPrice').textContent = res.price_data[res.price_data.length - 1];
+                    updateLastRefreshTime();
+                    updatePriceTable(res.timestamp, res.price_data, res.flags);
+                }
+            });
+        }
+
+        function calculateMovingAverage(data, windowSize) {
+            let avgData = [];
+            for (let i = 0; i < data.length; i++) {
+                let windowEnd = Math.min(data.length, i + windowSize);
+                let sum = 0;
+                for (let j = i; j < windowEnd; j++) {
+                    sum += data[j];
+                }
+                avgData.push(sum / (windowEnd - i));
+            }
+            return avgData;
+        }
+
+        function updatePriceTable(timestamps, prices, flags) {
+            var table = document.getElementById('priceTable');
+            var existingRows = table.getElementsByTagName('tr');
+            var maxRows = 20; // Maximum number of rows allowed in the table
+
+            // Add new rows with the latest data
+            timestamps.forEach(function(timestamp, i) {
+                // Insert new row at the top (after header)
+                var row = table.insertRow(1);
+                var cell1 = row.insertCell(0);
+                var cell2 = row.insertCell(1);
+                cell1.textContent = timestamp;
+                cell2.textContent = prices[i];
+                if (flags[i] === 1) {
+                    row.className = 'highlight-green';
+                } else if (flags[i] === -1) {
+                    row.className = 'highlight-red';
+                }
+
+                // Ensure table does not exceed maximum row count
+                if (table.rows.length > maxRows + 1) { // +1 to account for the header row
+                    table.deleteRow(-1); // Remove the oldest row at the bottom
+                }
+            });
+        }
+
+        function updateLastRefreshTime() {
+            var currentTime = new Date();
+            var formattedTime = currentTime.getHours() + ":" + currentTime.getMinutes() + ":" + currentTime.getSeconds();
+            document.getElementById('lastRefreshTime').innerText = "As of " + formattedTime;
+        }
+
+        fetchData(); // initial data fetch
+        setInterval(fetchData, 5000); // fetch data every 5 seconds
+    </script>
+</body>
+</html>
